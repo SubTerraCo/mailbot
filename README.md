@@ -14,6 +14,14 @@ Local Gmail sorting assistant (CRU-only: labels and archive, no delete/trash API
   - **In-app browser sign-in** (default API port 8765): `http://127.0.0.1:8765/api/oauth/google/callback` and `http://localhost:8765/api/oauth/google/callback`
   - If you change `MAILBOT_API_PORT`, update these URIs in Google Cloud to match.
 
+## First-time Gmail (OAuth) — simplest path
+
+1. Open the app: **http://127.0.0.1:8765** (after `mailbot serve`).
+2. Click **Gmail setup help** (or open **http://127.0.0.1:8765/?setup=1**). That panel has **Copy** buttons for the exact redirect URLs and **Connect** links for each account in `accounts.yaml`.
+3. Follow the short checklist in the panel (Google Cloud → enable Gmail API → create OAuth client → paste URIs → download `credentials.json` into the Mailbot folder).
+
+A longer plain-English walkthrough is in **[docs/oauth-setup.md](docs/oauth-setup.md)**.
+
 ## One-time setup
 
 ```bash

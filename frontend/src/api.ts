@@ -21,6 +21,24 @@ export async function fetchAccounts(): Promise<{ accounts: AccountInfo[] }> {
   return j("/api/accounts");
 }
 
+export type OAuthHints = {
+  credentialsPresent: boolean;
+  credentialsPath: string;
+  apiPort: number;
+  accountIds: string[];
+  browserCallbackUris: string[];
+  cliLoopbackUris: string[];
+  scopes: string[];
+  successReturnUrlConfigured: boolean;
+  successReturnUrl: string | null;
+  googleCloudConsole: string;
+  gmailApiEnable: string;
+};
+
+export async function fetchOAuthHints(): Promise<OAuthHints> {
+  return j("/api/oauth/google/hints");
+}
+
 export type SenderRow = {
   accountId: string;
   address: string;

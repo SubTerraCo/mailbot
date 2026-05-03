@@ -21,6 +21,38 @@ from mailbot.settings import resolved_oauth_redirect_uri, resolved_oauth_success
 router = APIRouter(prefix="/oauth/google", tags=["oauth"])
 
 
+@router.get("/hints")
+def oauth_hints():
+    """
+    Exact strings to paste into Google Cloud Console (Authorized redirect URIs).
+    """
+    port = settings.api_port
+    path = "/api/oauth/google/callback"
+    web_uris = [
+        f"http://127.0.0.1:{port}{path}",
+        f"http://localhost:{port}{path}",
+    ]
+    cli_port = settings.oauth_redirect_port
+    cli_uris = [
+        f"http://127.0.0.1:{cli_port}/",
+        f"http://localhost:{cli_port}/",
+    ]
+    ids = [a.id for a in load_accounts()]
+    return {
+        "credentialsPresent": settings.credentials_path.is_file(),
+        "credentialsPath": str(settings.credentials_path),
+        "apiPort": port,
+        "accountIds": ids,
+        "browserCallbackUris": web_uris,
+        "cliLoopbackUris": cli_uris,
+        "scopes": list(SCOPES),
+        "successReturnUrlConfigured": bool(settings.oauth_success_return_url),
+        "successReturnUrl": settings.oauth_success_return_url,
+        "googleCloudConsole": "https://console.cloud.google.com/apis/credentials",
+        "gmailApiEnable": "https://console.cloud.google.com/apis/library/gmail.googleapis.com",
+    }
+
+
 @router.get("/start")
 def oauth_start(account_id: str = Query(..., description="accounts.yaml profile id")):
     if settings.e2e:

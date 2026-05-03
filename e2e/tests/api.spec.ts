@@ -23,6 +23,16 @@ test("web OAuth start is disabled in E2E stub mode", async ({ request }) => {
   expect(res.status()).toBe(404);
 });
 
+test("oauth hints returns copy-paste redirect URIs and account ids", async ({ request }) => {
+  const res = await request.get("/api/oauth/google/hints");
+  expect(res.ok()).toBeTruthy();
+  const j = await res.json();
+  expect(j.browserCallbackUris.length).toBe(2);
+  expect(j.cliLoopbackUris.length).toBe(2);
+  expect(j.accountIds.sort()).toEqual(["personal", "work"]);
+  expect(j.browserCallbackUris[0]).toContain("/api/oauth/google/callback");
+});
+
 test("accounts list marks tokens present in E2E", async ({ request }) => {
   const res = await request.get("/api/accounts");
   expect(res.ok()).toBeTruthy();

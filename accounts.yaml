@@ -1,0 +1,5 @@
+accounts:
+- id: personal
+  label: Personal Gmail
+- id: work
+  label: Work Gmail

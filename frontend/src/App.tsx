@@ -10,6 +10,7 @@ import {
   type Msg,
   type SenderRow,
 } from "./api";
+import { SetupGuide } from "./SetupGuide";
 
 function fmtDate(ms: number) {
   if (!ms) return "";
@@ -30,6 +31,9 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [showSetup, setShowSetup] = useState(
+    () => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("setup") === "1",
+  );
 
   const loadAccounts = useCallback(async () => {
     const r = await fetchAccounts();
@@ -57,6 +61,15 @@ export default function App() {
   useEffect(() => {
     loadIndex().catch((e) => setError(String(e)));
   }, [loadIndex]);
+
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get("setup") === "1") {
+      sp.delete("setup");
+      const q = sp.toString();
+      window.history.replaceState({}, "", window.location.pathname + (q ? `?${q}` : "") + window.location.hash);
+    }
+  }, []);
 
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
@@ -218,6 +231,7 @@ export default function App() {
 
   return (
     <div className="layout" data-testid="app-root">
+      <SetupGuide open={showSetup} onClose={() => setShowSetup(false)} accounts={accounts} />
       <section className="panel">
         <h2>Mail queue</h2>
         <div className="toolbar">
@@ -241,6 +255,9 @@ export default function App() {
             onClick={() => loadIndex()}
           >
             Refresh index
+          </button>
+          <button type="button" data-testid="open-setup" onClick={() => setShowSetup(true)}>
+            Gmail setup help
           </button>
         </div>
         <div className="hint" data-testid="oauth-accounts">

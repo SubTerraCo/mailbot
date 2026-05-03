@@ -7,6 +7,14 @@ test.beforeEach(async ({ page, request }) => {
   await expect(page.getByTestId("app-root")).toBeVisible();
 });
 
+test("Gmail setup help opens guided OAuth panel", async ({ page }) => {
+  await page.getByTestId("open-setup").click();
+  await expect(page.getByRole("heading", { name: "Connect Gmail (first-time setup)" })).toBeVisible();
+  await expect(page.getByText("Browser sign-in (Mailbot):")).toBeVisible();
+  await page.getByRole("button", { name: "Back to Mailbot" }).click();
+  await expect(page.getByRole("heading", { name: "Connect Gmail (first-time setup)" })).not.toBeVisible();
+});
+
 test("four-column layout loads mixed sender queue", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Mail queue" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Working message" })).toBeVisible();
