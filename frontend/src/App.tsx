@@ -58,6 +58,23 @@ export default function App() {
     loadIndex().catch((e) => setError(String(e)));
   }, [loadIndex]);
 
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    const ok = sp.get("oauth_success");
+    const oauthErr = sp.get("oauth_error");
+    if (!ok && !oauthErr) return;
+    if (ok) {
+      setStatus(`Gmail connected for account: ${ok}`);
+      setError(null);
+    }
+    if (oauthErr) {
+      setError(`OAuth failed: ${oauthErr}`);
+    }
+    window.history.replaceState({}, "", window.location.pathname + window.location.hash);
+    void loadAccounts();
+    void loadIndex();
+  }, [loadAccounts, loadIndex]);
+
   const filteredSenders = useMemo(() => {
     if (!filterAccount) return senders;
     return senders.filter((s) => s.accountId === filterAccount);
@@ -226,9 +243,25 @@ export default function App() {
             Refresh index
           </button>
         </div>
+        <div className="hint" data-testid="oauth-accounts">
+          <strong>Gmail sign-in</strong> (per profile in accounts.yaml):{" "}
+          {accounts.map((a) => (
+            <span key={a.id} style={{ marginRight: 14 }}>
+              <span className="pill">{a.id}</span>{" "}
+              {a.hasToken ? (
+                <span style={{ color: "var(--ok)" }}>connected</span>
+              ) : (
+                <a href={`/api/oauth/google/start?account_id=${encodeURIComponent(a.id)}`} data-testid={`oauth-connect-${a.id}`}>
+                  Connect in browser
+                </a>
+              )}
+            </span>
+          ))}
+        </div>
         {error && <div className="error">{error}</div>}
         <div className="hint">
-          Shortcuts: <kbd>j</kbd>/<kbd>k</kbd> move in message list when a sender is selected.
+          Shortcuts: <kbd>j</kbd>/<kbd>k</kbd> move in message list when a sender is selected. CLI:{" "}
+          <code>mailbot oauth &lt;id&gt;</code> also works.
         </div>
         <div className="scroll">
           {filteredSenders.map((s) => (

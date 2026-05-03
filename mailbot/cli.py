@@ -31,9 +31,13 @@ def oauth(account_id: str):
         raise typer.Exit(1)
     token_path = token_path_for(account_id)
     typer.echo(
-        "Ensure Google Cloud OAuth client 'Authorized redirect URIs' includes "
-        f"http://127.0.0.1:{settings.oauth_redirect_port}/ "
-        f"and http://localhost:{settings.oauth_redirect_port}/",
+        "Google Cloud → Authorized redirect URIs must include (CLI): "
+        f"http://127.0.0.1:{settings.oauth_redirect_port}/ and http://localhost:{settings.oauth_redirect_port}/",
+    )
+    typer.echo(
+        "For in-app browser sign-in also add (API port): "
+        f"http://127.0.0.1:{settings.api_port}/api/oauth/google/callback "
+        f"and http://localhost:{settings.api_port}/api/oauth/google/callback",
     )
     run_oauth_interactive(settings.credentials_path, token_path)
     typer.echo(f"Saved token to {token_path}")

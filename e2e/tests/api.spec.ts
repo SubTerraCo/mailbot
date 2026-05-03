@@ -18,6 +18,11 @@ test("health", async ({ request }) => {
   expect(await res.json()).toEqual({ ok: true, e2e: true });
 });
 
+test("web OAuth start is disabled in E2E stub mode", async ({ request }) => {
+  const res = await request.get("/api/oauth/google/start?account_id=personal", { maxRedirects: 0 });
+  expect(res.status()).toBe(404);
+});
+
 test("accounts list marks tokens present in E2E", async ({ request }) => {
   const res = await request.get("/api/accounts");
   expect(res.ok()).toBeTruthy();

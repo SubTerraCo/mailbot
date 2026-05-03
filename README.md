@@ -8,10 +8,11 @@ Local Gmail sorting assistant (CRU-only: labels and archive, no delete/trash API
 
 - **Python 3.10+**
 - **Node.js 18+** (for building the UI; optional if you only use a pre-built `frontend/dist`)
-- Google Cloud project with **Gmail API** enabled and an **OAuth 2.0 Desktop** client → download `credentials.json` into the repo root.
-- In the OAuth client, add **Authorized redirect URIs**:
-  - `http://127.0.0.1:8766/`
-  - `http://localhost:8766/`
+- Google Cloud project with **Gmail API** enabled and an **OAuth 2.0** client → download `credentials.json` into the repo root (Desktop or Web app JSON both work with the Python client).
+- In the OAuth client, add **Authorized redirect URIs** (match your ports):
+  - **CLI** (`mailbot oauth`): `http://127.0.0.1:8766/` and `http://localhost:8766/`
+  - **In-app browser sign-in** (default API port 8765): `http://127.0.0.1:8765/api/oauth/google/callback` and `http://localhost:8765/api/oauth/google/callback`
+  - If you change `MAILBOT_API_PORT`, update these URIs in Google Cloud to match.
 
 ## One-time setup
 
@@ -25,7 +26,17 @@ copy accounts.yaml.example accounts.yaml   # Windows: copy; edit IDs
 # macOS/Linux: cp accounts.yaml.example accounts.yaml
 ```
 
-Edit `accounts.yaml`, then for each account id:
+Edit `accounts.yaml`, then connect each Gmail profile using **either** method:
+
+### A. Sign in from the Mailbot UI (recommended for multiple accounts)
+
+1. Run `mailbot serve` and open the app (e.g. **http://127.0.0.1:8765**).
+2. Under **Gmail sign-in**, click **Connect in browser** next to each `accounts.yaml` id and complete Google consent.
+3. Tokens are saved under `data/tokens/<id>.json`.
+
+When using **Vite dev** (`npm run dev` on port 5173), set **`MAILBOT_OAUTH_SUCCESS_RETURN_URL=http://127.0.0.1:5173`** so Google redirects back to the dev UI after login (still use redirect URIs on **8765**—the callback always hits the API server).
+
+### B. CLI (same tokens as the UI)
 
 ```bash
 mailbot oauth <account_id>
@@ -103,6 +114,8 @@ The suite builds the frontend, starts Uvicorn on port **8799** with fixture acco
 | `MAILBOT_E2E` | `true` / `1` to enable in-memory Gmail stub (Playwright) |
 | `MAILBOT_ACCOUNTS_PATH` | Override path to `accounts.yaml` |
 | `MAILBOT_RULES_PATH` | Override path to persisted `rules.yaml` |
+| `MAILBOT_OAUTH_REDIRECT_URI` | Full callback URL if not `http://127.0.0.1:{port}/api/oauth/google/callback` |
+| `MAILBOT_OAUTH_SUCCESS_RETURN_URL` | Where to send the browser after login (e.g. Vite dev URL) |
 
 ## License
 
