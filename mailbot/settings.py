@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,6 +22,19 @@ class Settings(BaseSettings):
 
     inbox_query: str = "in:inbox"
     index_max_messages: int = 2000
+
+    # Playwright / CI: stub Gmail; no credentials.json required
+    e2e: bool = False
+
+    @field_validator("e2e", mode="before")
+    @classmethod
+    def _coerce_e2e(cls, v):
+        if v is None:
+            return False
+        if isinstance(v, bool):
+            return v
+        s = str(v).strip().lower()
+        return s in ("1", "true", "yes", "on")
 
 
 settings = Settings()

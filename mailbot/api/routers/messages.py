@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from typing import Any
 
 from fastapi import APIRouter
@@ -9,10 +10,8 @@ from mailbot.api.deps import get_gmail_service
 from mailbot.constants import REVIEW_DELETE_LABEL
 from mailbot.gmail_ops import batch_modify, ensure_label, get_message_meta, list_inbox_message_ids
 from mailbot.gmail_ops import extract_meta_fields as extract_fields
-from mailbot.rules_store import gmail_query_for_rule, load_rules, save_rules
-from mailbot.rules_store import StoredRule, RuleMatch, RuleActions
+from mailbot.rules_store import RuleActions, RuleMatch, StoredRule, gmail_query_for_rule, load_rules, save_rules
 from mailbot.settings import settings
-import uuid
 
 router = APIRouter(prefix="/accounts", tags=["messages"])
 
@@ -24,11 +23,7 @@ class ModifyBody(BaseModel):
     archive: bool = False
 
 
-@router.get("/{account_id}/messages/{message_id}")
-def one_message(account_id: str, message_id: str):
-    svc = get_gmail_service(account_id)
-    meta = get_message_meta(svc, message_id)
-    return extract_fields(meta)
+# Static /messages/* paths MUST be declared before /messages/{message_id} or "modify" is captured as an id.
 
 
 @router.post("/{account_id}/messages/modify")
@@ -40,7 +35,6 @@ def modify_messages(account_id: str, body: ModifyBody):
     remove_ids = list(body.remove_label_ids)
     if body.archive:
         remove_ids.append("INBOX")
-    # dedupe
     remove_ids = list(dict.fromkeys(remove_ids))
     batch_modify(svc, body.message_ids, add_label_ids=add_ids, remove_label_ids=remove_ids or None)
     return {"ok": True, "modified": len(body.message_ids)}
@@ -55,6 +49,13 @@ def review_delete(account_id: str, body: ModifyBody):
         }
     )
     return modify_messages(account_id, body)
+
+
+@router.get("/{account_id}/messages/{message_id}")
+def one_message(account_id: str, message_id: str):
+    svc = get_gmail_service(account_id)
+    meta = get_message_meta(svc, message_id)
+    return extract_fields(meta)
 
 
 class ApplyRuleDraft(BaseModel):

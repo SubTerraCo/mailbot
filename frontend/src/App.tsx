@@ -200,11 +200,15 @@ export default function App() {
   }, [selectedSender, msgList, idx]);
 
   return (
-    <div className="layout">
+    <div className="layout" data-testid="app-root">
       <section className="panel">
         <h2>Mail queue</h2>
         <div className="toolbar">
-          <select value={filterAccount} onChange={(e) => setFilterAccount(e.target.value)}>
+          <select
+            data-testid="account-filter"
+            value={filterAccount}
+            onChange={(e) => setFilterAccount(e.target.value)}
+          >
             <option value="">All accounts</option>
             {accounts.map((a) => (
               <option key={a.id} value={a.id}>
@@ -212,7 +216,13 @@ export default function App() {
               </option>
             ))}
           </select>
-          <button type="button" className="primary" disabled={loading} onClick={() => loadIndex()}>
+          <button
+            type="button"
+            className="primary"
+            data-testid="refresh-index"
+            disabled={loading}
+            onClick={() => loadIndex()}
+          >
             Refresh index
           </button>
         </div>
@@ -224,6 +234,9 @@ export default function App() {
           {filteredSenders.map((s) => (
             <div
               key={`${s.accountId}:${s.address}`}
+              data-testid="sender-row"
+              data-account-id={s.accountId}
+              data-address={s.address}
               className={`row ${selectedSender?.address === s.address && selectedSender?.accountId === s.accountId ? "active" : ""}`}
               onClick={() => {
                 setSelectedSender(s);
@@ -250,6 +263,8 @@ export default function App() {
               {msgList.map((m) => (
                 <div
                   key={m.id}
+                  data-testid="message-row"
+                  data-message-id={m.id}
                   className={`row ${selectedMsg?.id === m.id ? "active" : ""}`}
                   onClick={() => setSelectedMsg(m)}
                 >
@@ -259,8 +274,8 @@ export default function App() {
                 </div>
               ))}
               {selectedMsg && (
-                <div className="msg-detail">
-                  <h3>{selectedMsg.subject || "(no subject)"}</h3>
+                <div className="msg-detail" data-testid="message-detail">
+                  <h3 data-testid="message-detail-subject">{selectedMsg.subject || "(no subject)"}</h3>
                   <div className="pill">From {selectedSender.address}</div>
                   <div style={{ color: "var(--muted)", fontSize: 13 }}>{fmtDate(selectedMsg.internalDate)}</div>
                   <p style={{ lineHeight: 1.45 }}>{selectedMsg.snippet}</p>
@@ -275,38 +290,74 @@ export default function App() {
         <h2>Rule actions</h2>
         <div className="hint">
           Match scope for bulk / save:{" "}
-          <select value={matchType} onChange={(e) => setMatchType(e.target.value as "from_address" | "from_domain")}>
+          <select
+            data-testid="match-type"
+            value={matchType}
+            onChange={(e) => setMatchType(e.target.value as "from_address" | "from_domain")}
+          >
             <option value="from_address">Full address</option>
             <option value="from_domain">Domain</option>
           </select>
         </div>
         <div className="toolbar" style={{ flexDirection: "column", alignItems: "stretch" }}>
-          <button type="button" className="primary" disabled={!selectedMsg} onClick={() => void applyThis()}>
+          <button
+            type="button"
+            className="primary"
+            data-testid="apply-this"
+            disabled={!selectedMsg}
+            onClick={() => void applyThis()}
+          >
             Apply to this message
           </button>
-          <button type="button" disabled={!selectedSender} onClick={() => void applyAllInbox()}>
+          <button
+            type="button"
+            data-testid="apply-all-inbox"
+            disabled={!selectedSender}
+            onClick={() => void applyAllInbox()}
+          >
             Apply all matching in inbox (now)
           </button>
-          <button type="button" disabled={!selectedSender} onClick={() => void saveFuture()}>
+          <button
+            type="button"
+            data-testid="save-future"
+            disabled={!selectedSender}
+            onClick={() => void saveFuture()}
+          >
             Apply inbox + save rule for future
           </button>
-          <button type="button" className="danger" disabled={!selectedMsg} onClick={() => void junkReview()}>
+          <button
+            type="button"
+            className="danger"
+            data-testid="junk-review-delete"
+            disabled={!selectedMsg}
+            onClick={() => void junkReview()}
+          >
             Junk: Review-Delete label
           </button>
         </div>
-        {status && <div className="hint">{status}</div>}
+        {status && (
+          <div className="hint" data-testid="status-line">
+            {status}
+          </div>
+        )}
       </section>
 
       <section className="panel">
         <h2>Labels & settings</h2>
         <div className="checkbox-line">
           <label>
-            <input type="checkbox" checked={archive} onChange={(e) => setArchive(e.target.checked)} />
+            <input
+              data-testid="archive-toggle"
+              type="checkbox"
+              checked={archive}
+              onChange={(e) => setArchive(e.target.checked)}
+            />
             Archive after apply (removes INBOX)
           </label>
         </div>
         <div className="toolbar" style={{ flexDirection: "column", alignItems: "stretch" }}>
           <input
+            data-testid="new-label-input"
             type="text"
             placeholder="New label name (e.g. Mailbot/Newsletter)"
             value={newLabel}

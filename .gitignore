@@ -13,6 +13,14 @@ credentials.json
 data/tokens/
 .env
 
+# E2E ephemeral rules (path overridden by MAILBOT_RULES_PATH in tests)
+.e2e/
+
+# Playwright
+e2e/node_modules/
+e2e/playwright-report/
+e2e/test-results/
+
 # Node
 frontend/node_modules/
 frontend/dist/

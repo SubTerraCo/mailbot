@@ -16,11 +16,12 @@ def list_accounts():
     out = []
     for a in load_accounts():
         tp = token_path_for(a.id)
+        has_token = settings.e2e or tp.is_file()
         out.append(
             {
                 "id": a.id,
                 "label": a.label or a.id,
-                "hasToken": tp.is_file(),
+                "hasToken": has_token,
             }
         )
     return {"accounts": out}
@@ -43,7 +44,7 @@ def sender_index(account_id: str):
 def mixed_index():
     per: dict[str, dict] = {}
     for a in load_accounts():
-        if not token_path_for(a.id).is_file():
+        if not settings.e2e and not token_path_for(a.id).is_file():
             continue
         svc = get_gmail_service(a.id)
         per[a.id] = build_sender_index(svc, settings.inbox_query, settings.index_max_messages)
