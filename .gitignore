@@ -9,6 +9,7 @@ build/
 
 # Secrets & local data
 credentials.json
+accounts.yaml
 **/token.json
 data/tokens/
 .env
