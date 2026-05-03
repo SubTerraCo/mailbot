@@ -1,0 +1,29 @@
+[project]
+name = "mailbot"
+version = "0.1.0"
+description = "Local Gmail sorting assistant (CRU-only; multi-account)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "google-api-python-client>=2.150",
+  "google-auth-oauthlib>=1.2",
+  "google-auth>=2.35",
+  "pydantic>=2.9",
+  "pydantic-settings>=2.6",
+  "pyyaml>=6.0",
+  "typer>=0.12",
+  "python-multipart>=0.0.12",
+]
+
+[project.scripts]
+mailbot = "mailbot.cli:main"
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mailbot*"]

@@ -1,0 +1,6 @@
+# Copy to accounts.yaml and edit. Each id gets its own token in data/tokens/<id>.json
+accounts:
+  - id: personal
+    label: Personal Gmail
+  - id: work
+    label: Work Gmail
