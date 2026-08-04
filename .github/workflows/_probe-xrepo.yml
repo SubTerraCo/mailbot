@@ -1,0 +1,5 @@
+name: Probe XRepo Mailbot
+on: [push, workflow_dispatch]
+jobs:
+  call:
+    uses: SubTerraCo/subterra-governance/.github/workflows/_probe-called.yml@master
