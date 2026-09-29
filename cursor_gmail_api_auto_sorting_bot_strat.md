@@ -1,4 +1,6 @@
 # Gmail API auto sorting bot strategy
+
+> **Chat export, not a spec.** Mailbot (`MB`) labels and archives. A later slice may read a bill PDF and hand line items to Billbot when both are installed. Google Sheets is not the system of record. Blueprint: `subterra-governance` `Docs/ARCHITECTURE.md`.
 _Exported on 5/3/2026 at 03:14:04 MDT from Cursor (3.2.16)_
 
 ---
